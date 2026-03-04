@@ -1,3 +1,5 @@
-# Ignore local claude config but keep skills
+# Ignore local claude config but keep gapcheck skill
 .claude/*
 !.claude/skills/
+.claude/skills/*
+!.claude/skills/gapcheck/
