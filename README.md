@@ -21,7 +21,7 @@ GapCheck analyzes your codebase through a cybernetic lens, measuring **variety f
 
 ```bash
 # Clone and run
-git clone https://github.com/YOUR_USERNAME/gapcheck
+git clone https://github.com/jacknefty/gapcheck
 cd gapcheck
 bun install
 
