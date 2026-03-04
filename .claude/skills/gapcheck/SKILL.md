@@ -12,10 +12,8 @@ Analyze the current project using the Viable System Model (VSM).
 Run this command to analyze the codebase:
 
 ```bash
-bun /Users/lionsmane/Desktop/GapCheck/src/index.ts $ARGUMENTS
+gapcheck ${ARGUMENTS:-.}
 ```
-
-If `$ARGUMENTS` is empty, analyze the current working directory (`.`).
 
 ## After Analysis
 

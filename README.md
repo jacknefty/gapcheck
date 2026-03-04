@@ -20,27 +20,34 @@ GapCheck analyzes your codebase through a cybernetic lens, measuring **variety f
 ## Installation
 
 ```bash
-# Clone and run
 git clone https://github.com/jacknefty/gapcheck
 cd gapcheck
 bun install
-
-# Or link globally
 bun link
-gapcheck ./any-project
 ```
+
+Now `gapcheck` is available globally.
 
 ## Usage
 
 ```bash
-# Analyze a project
-bun ./src/index.ts /path/to/project
+gapcheck ./my-project          # Analyze a project
+gapcheck .                     # Analyze current directory
+gapcheck ./src --json          # JSON output
+gapcheck ./my-project -v       # Verbose (all findings)
+```
 
-# JSON output
-bun ./src/index.ts /path/to/project --json
+## Claude Code Integration
 
-# Verbose (all findings)
-bun ./src/index.ts /path/to/project -v
+Use `/gapcheck` in Claude Code:
+
+```bash
+# Symlink the skill
+ln -s /path/to/gapcheck/.claude/skills/gapcheck ~/.claude/skills/gapcheck
+
+# Restart Claude Code, then:
+/gapcheck
+/gapcheck src/
 ```
 
 ## Output
