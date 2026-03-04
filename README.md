@@ -19,6 +19,8 @@ GapCheck analyzes your codebase through a cybernetic lens, measuring **variety f
 
 ## Installation
 
+Requires [Bun](https://bun.sh).
+
 ```bash
 git clone https://github.com/jacknefty/gapcheck
 cd gapcheck
@@ -26,7 +28,7 @@ bun install
 bun link
 ```
 
-Now `gapcheck` is available globally.
+Now `gapcheck` is available globally as a CLI and as a `/gapcheck` skill in Claude Code.
 
 ## Usage
 
@@ -37,18 +39,16 @@ gapcheck ./src --json          # JSON output
 gapcheck ./my-project -v       # Verbose (all findings)
 ```
 
-## Claude Code Integration
+## Claude Code Skill
 
-Use `/gapcheck` in Claude Code:
+After running `bun link`, the `/gapcheck` skill is available in Claude Code:
 
-```bash
-# Symlink the skill
-ln -s /path/to/gapcheck/.claude/skills/gapcheck ~/.claude/skills/gapcheck
-
-# Restart Claude Code, then:
-/gapcheck
-/gapcheck src/
 ```
+/gapcheck              # Analyze current directory
+/gapcheck src/         # Analyze specific path
+```
+
+The skill uses the Stafford Beer VSM framework to diagnose your codebase and suggest interventions.
 
 ## Output
 
