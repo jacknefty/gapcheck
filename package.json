@@ -6,12 +6,34 @@
   "bin": {
     "gapcheck": "./src/index.ts"
   },
+  "files": [
+    "src/**/*",
+    "README.md"
+  ],
   "scripts": {
     "start": "bun run src/index.ts",
     "check": "bun run src/index.ts"
   },
-  "keywords": ["vsm", "viable-system-model", "static-analysis", "codebase-health"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacknefty/gapcheck.git"
+  },
+  "keywords": [
+    "vsm",
+    "viable-system-model",
+    "static-analysis",
+    "codebase-health",
+    "cybernetics",
+    "stafford-beer",
+    "mcp",
+    "claude-code"
+  ],
+  "author": "jacknefty",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jacknefty/gapcheck/issues"
+  },
+  "homepage": "https://github.com/jacknefty/gapcheck#readme",
   "devDependencies": {
     "@types/bun": "latest"
   }

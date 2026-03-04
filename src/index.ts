@@ -3,13 +3,15 @@
  * GapCheck - Diagnose codebase viability using Stafford Beer's VSM
  *
  * Usage:
- *   bun run src/index.ts ./path/to/project
- *   bunx gapcheck ./path/to/project
+ *   gapcheck ./path/to/project
+ *   npx gapcheck ./path/to/project
+ *   claude mcp add gapcheck -- npx gapcheck --mcp
  */
 
 import { buildIndex } from './scanner'
 import { analyze } from './analyzer'
 import { generateReport } from './report'
+import { startMcpServer } from './mcp'
 import { resolve, basename } from 'path'
 
 const HELP = `
@@ -19,20 +21,31 @@ Usage:
   gapcheck <path>           Analyze a codebase
   gapcheck <path> --json    Output as JSON
   gapcheck <path> -v        Verbose output
+  gapcheck --mcp            Start MCP server (for Claude Code)
 
 Options:
   --json    Output report as JSON
   -v        Verbose mode (show all findings)
+  --mcp     Run as MCP server for Claude Code integration
   --help    Show this help
 
 Examples:
   gapcheck ./my-project
   gapcheck . --json > report.json
   gapcheck ../other-project -v
+
+Claude Code Integration:
+  claude mcp add gapcheck -- npx gapcheck --mcp
 `
 
 async function main() {
   const args = process.argv.slice(2)
+
+  // MCP server mode
+  if (args.includes('--mcp')) {
+    await startMcpServer()
+    return
+  }
 
   if (args.includes('--help') || args.includes('-h') || args.length === 0) {
     console.log(HELP)
