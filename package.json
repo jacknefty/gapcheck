@@ -1,0 +1,18 @@
+{
+  "name": "gapcheck",
+  "version": "0.1.0",
+  "description": "Diagnose codebase viability using Stafford Beer's VSM",
+  "type": "module",
+  "bin": {
+    "gapcheck": "./src/index.ts"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "check": "bun run src/index.ts"
+  },
+  "keywords": ["vsm", "viable-system-model", "static-analysis", "codebase-health"],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
