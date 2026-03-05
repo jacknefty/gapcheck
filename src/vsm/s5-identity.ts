@@ -17,12 +17,13 @@
  * Key question: Is the identity clear? Can you tell what this system IS?
  */
 
-import type { CodebaseIndex } from '../types'
+import type { CodebaseIndex, Severity } from '../types'
 import type { VarietyProfile } from './variety'
+import { type IdentityClarity, IDENTITY_MULTIPLIER, scoreSeverity } from '../domain'
 
 export interface S5Finding {
   type: string
-  severity: 'HIGH' | 'MEDIUM' | 'LOW'
+  severity: Severity
   message: string
   files: string[]
 }
@@ -135,11 +136,14 @@ function findIdentityFiles(
     const file = index.files.get(path)!
 
     // Identity files typically:
-    // 1. In domain/models/types/entities directories
-    // 2. Have high fan-in (many depend on these definitions)
-    // 3. Export types/interfaces more than functions
+    // 1. Named domain.ts, types.ts, schema.ts, etc.
+    // 2. In domain/models/types/entities directories
+    // 3. Have high fan-in (many depend on these definitions)
+    // 4. Export types/interfaces more than functions
 
+    // Check both directory patterns AND file name patterns
     const isDomainPath = /\/(domain|models?|types?|entities|core|schema)\//i.test('/' + path)
+    const isDomainFile = /(domain|types?|schema|models?|entities|core)\.(ts|js|py|rs|go)$/i.test(path)
     const hasHighFanIn = profile.fanIn > 3
 
     // Check if mostly type exports
@@ -147,7 +151,7 @@ function findIdentityFiles(
     const funcExports = (file.content.match(/export\s+(function|const|async)/g) || []).length
     const isMostlyTypes = typeExports > funcExports
 
-    if (isDomainPath || (hasHighFanIn && isMostlyTypes)) {
+    if (isDomainPath || isDomainFile || (hasHighFanIn && isMostlyTypes)) {
       identityFiles.push(path)
     }
   }
@@ -166,6 +170,9 @@ function findIdentityErosion(index: CodebaseIndex): S5Finding[] {
   const filesWithAny: string[] = []
 
   for (const [path, file] of index.files) {
+    // Skip test files - they legitimately use type assertions for mocks
+    if (/\.(test|spec)\.(ts|tsx|js|jsx)$/.test(path)) continue
+
     const content = file.content
 
     // Excessive 'any' usage

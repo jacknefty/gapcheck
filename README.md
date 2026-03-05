@@ -19,7 +19,13 @@ GapCheck analyzes your codebase through a cybernetic lens, measuring **variety f
 
 ## Installation
 
-Requires [Bun](https://bun.sh).
+### CLI Tool
+
+```bash
+bun add -g gapcheck
+```
+
+Or from source:
 
 ```bash
 git clone https://github.com/jacknefty/gapcheck
@@ -28,7 +34,15 @@ bun install
 bun link
 ```
 
-Now `gapcheck` is available globally as a CLI and as a `/gapcheck` skill in Claude Code.
+### Claude Code Plugin
+
+Install the plugin to get the `/gapcheck` skill:
+
+```
+/plugin install gapcheck@claude-plugin-directory
+```
+
+Or manually add the skill by copying `skills/gapcheck/SKILL.md` to `~/.claude/skills/gapcheck/`.
 
 ## Usage
 

@@ -2,7 +2,7 @@
  * Report - Generate viability reports
  */
 
-import type { CodebaseIndex, Finding, VSMScores } from './types'
+import type { CodebaseIndex, Finding } from './types'
 import type { Analysis } from './analyzer'
 
 export interface ReportOptions {
@@ -10,35 +10,19 @@ export interface ReportOptions {
   verbose: boolean
 }
 
-function scoreEmoji(score: number): string {
-  if (score >= 8) return '+'
-  if (score >= 5) return '~'
-  return '-'
-}
-
-function severityColor(severity: string): string {
-  switch (severity) {
-    case 'HIGH': return '\x1b[31m'
-    case 'MEDIUM': return '\x1b[33m'
-    case 'LOW': return '\x1b[36m'
-    default: return '\x1b[0m'
-  }
-}
-
 const RESET = '\x1b[0m'
 const BOLD = '\x1b[1m'
 const DIM = '\x1b[2m'
+const RED = '\x1b[31m'
+const YELLOW = '\x1b[33m'
+const CYAN = '\x1b[36m'
 
-function systemDescription(system: string): string {
-  switch (system) {
-    case 'S1': return 'Operations (viable units)'
-    case 'S2': return 'Coordination (anti-oscillation)'
-    case 'S3': return 'Control (inside & now)'
-    case 'S3*': return 'Audit (observability)'
-    case 'S4': return 'Intelligence (outside & then)'
-    case 'S5': return 'Identity (closure)'
-    default: return system
-  }
+function emoji(score: number): string {
+  return score >= 8 ? '+' : score >= 5 ? '~' : '-'
+}
+
+function color(severity: string): string {
+  return severity === 'HIGH' ? RED : severity === 'MEDIUM' ? YELLOW : CYAN
 }
 
 export function generateReport(
@@ -52,160 +36,130 @@ export function generateReport(
       project: projectName,
       files: index.files.size,
       lines: index.totalLoc,
-      languages: Object.fromEntries(index.languages),
       scores: analysis.scores,
       findings: analysis.findings,
-      variety: {
-        totalVariety: analysis.variety.totalVariety,
-        concentration: analysis.variety.concentration,
-        imbalances: analysis.variety.imbalances.length,
+      axioms: analysis.axioms,
+      posiwid: analysis.posiwid,
+      algedonic: {
+        errorSources: analysis.algedonic.paths.length,
+        alertCoverage: analysis.algedonic.coverage,
+        silentZones: analysis.algedonic.silentZones,
+        paths: analysis.algedonic.paths.slice(0, 20), // Top 20 paths
       },
-      recursion: {
-        viableSubsystems: analysis.recursion.viableSubsystems,
-        coupledSubsystems: analysis.recursion.coupledSubsystems,
-      },
-      circularDependencies: analysis.s2.circularDeps,
     }, null, 2)
   }
 
   const lines: string[] = []
+  const { scores } = analysis
 
   // Header
   lines.push('')
-  lines.push(`${BOLD}GapCheck Viability Report${RESET}`)
-  lines.push(`${'='.repeat(60)}`)
-  lines.push('')
-  lines.push(`${DIM}Project:${RESET}  ${projectName}`)
-  lines.push(`${DIM}Scanned:${RESET}  ${index.files.size} files, ${index.totalLoc.toLocaleString()} lines`)
-
-  // Language breakdown
-  if (index.languages.size > 1) {
-    const langs = Array.from(index.languages.entries())
-      .sort((a, b) => b[1].loc - a[1].loc)
-      .map(([lang, stats]) => `${lang} (${stats.files})`)
-      .join(', ')
-    lines.push(`${DIM}Languages:${RESET} ${langs}`)
-  } else if (index.languages.size === 1) {
-    const [lang] = index.languages.keys()
-    lines.push(`${DIM}Language:${RESET} ${lang}`)
-  }
-
-  lines.push(`${DIM}Score:${RESET}    ${analysis.scores.overall}/100`)
+  lines.push(`${BOLD}GapCheck Report${RESET}`)
+  lines.push('='.repeat(50))
+  lines.push(`${DIM}Project:${RESET} ${projectName}`)
+  lines.push(`${DIM}Files:${RESET}   ${index.files.size} (${index.totalLoc.toLocaleString()} LOC)`)
+  lines.push(`${DIM}Score:${RESET}   ${scores.overall}/100`)
   lines.push('')
 
-  // Variety summary
-  lines.push(`${BOLD}Variety Engineering${RESET}`)
-  lines.push(`${'-'.repeat(60)}`)
-  lines.push(`Total variety: ${analysis.variety.totalVariety} exports`)
-  lines.push(`Concentration: ${(analysis.variety.concentration * 100).toFixed(0)}% ${analysis.variety.concentration > 0.5 ? '(high - bottleneck risk)' : '(distributed)'}`)
-  if (analysis.recursion.viableSubsystems.length > 0) {
-    lines.push(`Viable subsystems: ${analysis.recursion.viableSubsystems.slice(0, 3).join(', ')}${analysis.recursion.viableSubsystems.length > 3 ? '...' : ''}`)
-  }
-  lines.push('')
-
-  // VSM Assessment
+  // VSM Scores
   lines.push(`${BOLD}VSM Assessment${RESET}`)
-  lines.push(`${'-'.repeat(60)}`)
+  lines.push('-'.repeat(50))
+  lines.push(`${emoji(scores.s1Operations)} S1 Operations:   ${scores.s1Operations.toFixed(1)}/10`)
+  lines.push(`${emoji(scores.s2Coordination)} S2 Coordination: ${scores.s2Coordination.toFixed(1)}/10`)
+  lines.push(`${emoji(scores.s3Control)} S3 Control:      ${scores.s3Control.toFixed(1)}/10`)
+  lines.push(`${emoji(scores.s3StarAudit)} S3* Audit:       ${scores.s3StarAudit.toFixed(1)}/10`)
+  lines.push(`${emoji(scores.s4Intelligence)} S4 Intelligence: ${scores.s4Intelligence.toFixed(1)}/10`)
+  lines.push(`${emoji(scores.s5Identity)} S5 Identity:     ${scores.s5Identity.toFixed(1)}/10`)
   lines.push('')
 
-  const scores = analysis.scores
-  lines.push(`${scoreEmoji(scores.s1Operations)} S1 Operations:    ${scores.s1Operations.toFixed(1)}/10  ${DIM}${systemDescription('S1')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.s2Coordination)} S2 Coordination:  ${scores.s2Coordination.toFixed(1)}/10  ${DIM}${systemDescription('S2')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.s3Control)} S3 Control:       ${scores.s3Control.toFixed(1)}/10  ${DIM}${systemDescription('S3')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.s3StarAudit)} S3* Audit:        ${scores.s3StarAudit.toFixed(1)}/10  ${DIM}${systemDescription('S3*')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.s4Intelligence)} S4 Intelligence:  ${scores.s4Intelligence.toFixed(1)}/10  ${DIM}${systemDescription('S4')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.s5Identity)} S5 Identity:      ${scores.s5Identity.toFixed(1)}/10  ${DIM}${systemDescription('S5')}${RESET}`)
-  lines.push(`${scoreEmoji(scores.varietyBalance)} Variety Balance:  ${scores.varietyBalance.toFixed(1)}/10`)
+  // Axioms
+  lines.push(`${BOLD}Viability Axioms${RESET}`)
+  lines.push('-'.repeat(50))
+  for (const ax of analysis.axioms) {
+    lines.push(`${ax.ok ? '+' : '-'} Axiom ${ax.axiom}: ${ax.message}`)
+  }
   lines.push('')
 
-  // Findings by severity
+  // Algedonic Channels (Pain Signal Paths)
+  const alg = analysis.algedonic
+  if (alg.paths.length > 0) {
+    const alertPct = Math.round(alg.coverage * 100)
+    const logOnly = alg.paths.filter(p => p.reachesLog && !p.reachesAlert).length
+    const swallowed = alg.paths.filter(p => p.swallowed).length
+
+    lines.push(`${BOLD}Algedonic Channels${RESET}`)
+    lines.push('-'.repeat(50))
+    lines.push(`${alertPct >= 50 ? '+' : alertPct >= 20 ? '~' : '-'} ${alg.paths.length} error sources traced`)
+    lines.push(`  ${alertPct}% reach alerting services`)
+    if (logOnly > 0) lines.push(`  ${DIM}${logOnly} reach logs only${RESET}`)
+    if (swallowed > 0) lines.push(`  ${RED}${swallowed} swallowed silently${RESET}`)
+
+    // Show example paths
+    if (options.verbose && alg.paths.length > 0) {
+      lines.push('')
+      const examples = alg.paths.slice(0, 5)
+      for (const p of examples) {
+        const src = `${p.source.file}:${p.source.line}`
+        lines.push(`  ${DIM}${src} → ${p.terminal}${RESET}`)
+      }
+    }
+
+    // Silent zones
+    if (alg.silentZones.length > 0) {
+      lines.push(`  ${RED}Silent zones: ${alg.silentZones.slice(0, 3).join(', ')}${RESET}`)
+    }
+    lines.push('')
+  } else {
+    lines.push(`${emoji(analysis.painSignals.coverage * 10)} Pain Signals: ${analysis.painSignals.strength}`)
+    lines.push('')
+  }
+
+  // POSIWID
+  if (analysis.posiwid.untestedComplexFunctions > 0) {
+    lines.push(`${BOLD}POSIWID${RESET}`)
+    lines.push('-'.repeat(50))
+    lines.push(`${analysis.posiwid.untestedComplexFunctions} complex functions without tests`)
+    for (const f of analysis.posiwid.findings.slice(0, 3)) {
+      lines.push(`  ${DIM}${f.file}: ${f.function}()${RESET}`)
+    }
+    lines.push('')
+  }
+
+  // Findings
   const high = analysis.findings.filter(f => f.severity === 'HIGH')
   const medium = analysis.findings.filter(f => f.severity === 'MEDIUM')
   const low = analysis.findings.filter(f => f.severity === 'LOW')
 
   if (analysis.findings.length > 0) {
     lines.push(`${BOLD}Findings${RESET}`)
-    lines.push(`${'-'.repeat(60)}`)
-    lines.push('')
+    lines.push('-'.repeat(50))
 
-    const printFindings = (findings: Finding[], limit = 5) => {
-      const shown = options.verbose ? findings : findings.slice(0, limit)
-      for (const f of shown) {
-        const color = severityColor(f.severity)
-        lines.push(`  ${color}[${f.system}]${RESET} ${f.type}`)
-        lines.push(`         ${DIM}${f.message}${RESET}`)
+    const show = (findings: Finding[], limit = 5) => {
+      const list = options.verbose ? findings : findings.slice(0, limit)
+      for (const f of list) {
+        lines.push(`  ${color(f.severity)}[${f.system}]${RESET} ${f.message}`)
       }
       if (!options.verbose && findings.length > limit) {
-        lines.push(`         ${DIM}... and ${findings.length - limit} more${RESET}`)
+        lines.push(`  ${DIM}... ${findings.length - limit} more${RESET}`)
       }
     }
 
-    if (high.length > 0) {
-      lines.push(`${severityColor('HIGH')}HIGH (${high.length})${RESET}`)
-      printFindings(high)
-      lines.push('')
+    if (high.length) {
+      lines.push(`${RED}HIGH (${high.length})${RESET}`)
+      show(high)
     }
-
-    if (medium.length > 0) {
-      lines.push(`${severityColor('MEDIUM')}MEDIUM (${medium.length})${RESET}`)
-      printFindings(medium)
-      lines.push('')
+    if (medium.length) {
+      lines.push(`${YELLOW}MEDIUM (${medium.length})${RESET}`)
+      show(medium)
     }
-
-    if (low.length > 0 && options.verbose) {
-      lines.push(`${severityColor('LOW')}LOW (${low.length})${RESET}`)
-      printFindings(low)
-      lines.push('')
-    } else if (low.length > 0) {
-      lines.push(`${DIM}+ ${low.length} LOW severity findings (use -v to see)${RESET}`)
-      lines.push('')
+    if (low.length && options.verbose) {
+      lines.push(`${CYAN}LOW (${low.length})${RESET}`)
+      show(low)
+    } else if (low.length) {
+      lines.push(`${DIM}+ ${low.length} LOW findings (use -v)${RESET}`)
     }
-  } else {
-    lines.push(`${BOLD}No pathologies detected${RESET}`)
     lines.push('')
   }
-
-  // Recommendations
-  lines.push(`${BOLD}Recommendations${RESET}`)
-  lines.push(`${'-'.repeat(60)}`)
-  lines.push('')
-
-  const recommendations: string[] = []
-
-  // Based on scores
-  if (scores.s1Operations < 5) {
-    recommendations.push('Clarify operational boundaries - which modules could be hived off?')
-  }
-  if (scores.s2Coordination < 5) {
-    recommendations.push('Add coordination mechanism (events, state management) to prevent oscillation')
-  }
-  if (analysis.s2.circularDeps.length > 0) {
-    recommendations.push('Break circular dependencies via interface extraction')
-  }
-  if (scores.s3Control < 5) {
-    recommendations.push('Add configuration management for resource allocation')
-  }
-  if (scores.s3StarAudit < 5) {
-    recommendations.push('Add structured logging and error tracking (pino, Sentry)')
-  }
-  if (scores.s4Intelligence < 5) {
-    recommendations.push('Add future-facing patterns: versioning, adapters, migration support')
-  }
-  if (scores.s5Identity < 5) {
-    recommendations.push('Define core domain types in dedicated models directory')
-  }
-  if (analysis.variety.concentration > 0.5) {
-    recommendations.push('Reduce variety concentration - too much flows through few modules')
-  }
-
-  if (recommendations.length === 0) {
-    recommendations.push('System appears viable - maintain current practices')
-  }
-
-  for (let i = 0; i < Math.min(recommendations.length, 5); i++) {
-    lines.push(`  ${i + 1}. ${recommendations[i]}`)
-  }
-  lines.push('')
 
   return lines.join('\n')
 }

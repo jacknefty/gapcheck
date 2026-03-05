@@ -1,5 +1,15 @@
-# Ignore local claude config but keep gapcheck skill
-.claude/*
-!.claude/skills/
-.claude/skills/*
-!.claude/skills/gapcheck/
+# Dependencies
+node_modules/
+
+# Build
+dist/
+*.tsbuildinfo
+
+# Local Claude config (skill is at /skills for plugin marketplace)
+.claude/
+
+# OS
+.DS_Store
+
+# Test coverage
+coverage/

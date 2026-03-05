@@ -1,0 +1,12 @@
+{
+  "name": "gapcheck",
+  "description": "Diagnose codebase viability using Stafford Beer's Viable System Model. Traces error paths, detects variety imbalances, and identifies organizational pathologies in code.",
+  "author": {
+    "name": "jacknefty"
+  },
+  "homepage": "https://github.com/jacknefty/gapcheck",
+  "keywords": ["vsm", "viability", "diagnosis", "cybernetics", "architecture"],
+  "dependencies": {
+    "cli": "bun add -g gapcheck"
+  }
+}

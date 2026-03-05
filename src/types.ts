@@ -1,29 +1,21 @@
 /**
- * GapCheck Domain Types - What IS this system?
- *
- * This file defines the core identity of GapCheck:
- * - What it consumes (CodebaseIndex)
- * - What it produces (Analysis, Finding)
- * - What shapes are valid
- *
- * All other modules import from here. This IS GapCheck.
+ * GapCheck Types - Core data structures
  */
 
 import type { ParsedFile, Language } from './parsers/types'
 
 // ============================================================
-// INPUT: What GapCheck consumes
+// INPUT
 // ============================================================
 
 export interface CodeFile {
   path: string
   language: Language
-  imports: string[]       // Resolved local import paths
-  importedBy: string[]    // Files that import this one
-  exports: string[]       // Exported symbol names
+  imports: string[]
+  importedBy: string[]
+  exports: string[]
   loc: number
   content: string
-  /** Full parsed data for deeper analysis */
   parsed: ParsedFile
 }
 
@@ -31,12 +23,11 @@ export interface CodebaseIndex {
   root: string
   files: Map<string, CodeFile>
   totalLoc: number
-  /** Language breakdown */
   languages: Map<Language, { files: number; loc: number }>
 }
 
 // ============================================================
-// OUTPUT: What GapCheck produces
+// OUTPUT
 // ============================================================
 
 export type Severity = 'HIGH' | 'MEDIUM' | 'LOW'
@@ -59,7 +50,3 @@ export interface VSMScores {
   varietyBalance: number
   overall: number
 }
-
-// Note: The full Analysis type includes implementation details
-// from vsm/ modules (VarietyAnalysis, RecursionAnalysis, etc.)
-// Those are defined in analyzer.ts which orchestrates them.
