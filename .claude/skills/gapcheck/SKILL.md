@@ -28,7 +28,7 @@ Interpret the results for the user:
 
 | System | Meaning |
 |--------|---------|
-| S1 Operations | Can modules be hived off? Clear boundaries? |
+| S1 Operations | Are producers cohesive? Could they be hived off? |
 | S2 Coordination | What prevents oscillation? Events, state management? |
 | S3 Control | Synoptic view? Config, orchestration? |
 | S3* Audit | Observability? Logging, error tracking? |

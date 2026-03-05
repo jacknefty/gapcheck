@@ -104,7 +104,7 @@ Traditional static analysis counts symptoms. GapCheck measures **variety flows**
 - **Fan-in**: How many modules depend on this one?
 - **Fan-out**: How many modules does this depend on?
 - **Concentration**: Is variety evenly distributed or bottlenecked?
-- **Cohesion**: Can this subsystem be hived off?
+- **Cohesion**: How self-contained is this module?
 
 A module with 50 exports isn't automatically bad. A module with 50 exports and 2 consumers has **unabsorbed variety** — that's the pathology.
 

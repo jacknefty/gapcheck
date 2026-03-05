@@ -5,10 +5,10 @@
  * Each S1 must be viable in its own right - able to survive
  * independently if separated from the whole.
  *
- * In code: Feature modules, services, handlers that DO things.
- * NOT: utilities, helpers, shared code.
+ * In code: Feature modules, services, handlers that PRODUCE value.
+ * NOT: utilities, helpers, shared code (these support S1s but aren't S1s).
  *
- * Key question: Can this module be hived off?
+ * Key question: Is this a producer? (Only producers can be hived off)
  */
 
 import type { CodebaseIndex } from '../scanner'

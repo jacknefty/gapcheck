@@ -5,9 +5,12 @@
  * organizational structure must be recursive." - Beer
  *
  * This module identifies:
- * - Potential viable sub-systems (directories that could be hived off)
+ * - Cohesive sub-systems (self-contained directories)
  * - Recursion levels in the codebase
- * - Whether sub-systems have proper autonomy or are too coupled
+ * - Whether sub-systems have autonomy or are too coupled
+ *
+ * Note: High cohesion is NECESSARY but not SUFFICIENT for S1 viability.
+ * A module must also be a producer (not just a utility) to be hived off.
  */
 
 import type { CodebaseIndex, CodeFile } from '../scanner'
@@ -21,9 +24,9 @@ export interface RecursionLevel {
   internalEdges: number
   /** External connections (crossing this boundary) */
   externalEdges: number
-  /** Cohesion = internal / (internal + external). Higher = more viable */
+  /** Cohesion = internal / (internal + external). Higher = more self-contained */
   cohesion: number
-  /** Can this be hived off? */
+  /** Is this cohesive enough to be a potential S1? (still needs to be a producer) */
   viable: boolean
   /** Why or why not */
   viabilityReason: string
@@ -130,9 +133,9 @@ function analyzeRecursionLevel(
     viabilityReason = 'No connections - isolated island'
   } else if (cohesion >= 0.5) {
     viable = true
-    viabilityReason = `High cohesion (${(cohesion * 100).toFixed(0)}%) - could be independent package`
+    viabilityReason = `High cohesion (${(cohesion * 100).toFixed(0)}%) - potential S1 if it produces value`
   } else {
-    viabilityReason = `Moderate cohesion (${(cohesion * 100).toFixed(0)}%) - partial autonomy`
+    viabilityReason = `Moderate cohesion (${(cohesion * 100).toFixed(0)}%) - some autonomy`
   }
 
   return {
