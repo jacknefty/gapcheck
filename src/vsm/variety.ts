@@ -86,6 +86,23 @@ export function calculateVarietyProfiles(index: CodebaseIndex): Map<string, Vari
 }
 
 /**
+ * Check if a file is primarily type definitions (shared language, not a bottleneck)
+ */
+function isTypeDefinitionFile(path: string, content: string): boolean {
+  // Explicit type files
+  if (/\btypes?\.(ts|d\.ts)$/.test(path)) return true
+  if (/\/(types|interfaces|models|schemas)\//.test(path)) return true
+
+  // Check content: mostly type exports, minimal runtime code
+  const typeExports = (content.match(/export\s+(type|interface|enum)\s+/g) || []).length
+  const runtimeExports = (content.match(/export\s+(function|const|let|var|class|async)\s+/g) || []).length
+
+  // If >70% of exports are types, it's a type definition file
+  const total = typeExports + runtimeExports
+  return total > 0 && typeExports / total > 0.7
+}
+
+/**
  * Detect variety imbalances - where Ashby's Law is violated
  */
 export function detectVarietyImbalances(
@@ -121,7 +138,8 @@ export function detectVarietyImbalances(
 
     // BOTTLENECK: Extreme fan-in (everything flows through here)
     // Single point of failure, variety concentration
-    if (profile.fanIn > 10) {
+    // Exception: Type definition files are intentional variety attenuators (shared language)
+    if (profile.fanIn > 10 && !isTypeDefinitionFile(path, file.content)) {
       imbalances.push({
         type: 'bottleneck',
         severity: 'HIGH',
