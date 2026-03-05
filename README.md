@@ -67,28 +67,47 @@ The skill uses the Stafford Beer VSM framework to diagnose your codebase and sug
 ## Output
 
 ```
-GapCheck Viability Report
-============================================================
-
-Project:   my-project
-Scanned:   47 files, 12,340 lines
-Languages: typescript (42), python (5)
-Score:     64/100
-
-Variety Engineering
-------------------------------------------------------------
-Total variety: 260 exports
-Concentration: 49% (distributed)
-Viable subsystems: src/features, src/api
+GapCheck Report
+==================================================
+Project: my-project
+Files:   47 (12,340 LOC)
+Score:   64/100
 
 VSM Assessment
-------------------------------------------------------------
-+ S1 Operations:    9.0/10  Operations (viable units)
-+ S2 Coordination:  10.0/10 Coordination (anti-oscillation)
-~ S3 Control:       6.5/10  Control (inside & now)
-- S3* Audit:        3.5/10  Audit (observability)
-+ S4 Intelligence:  8.5/10  Intelligence (outside & then)
-- S5 Identity:      4.0/10  Identity (closure)
+--------------------------------------------------
++ S1 Operations:   9.0/10
++ S2 Coordination: 10.0/10
+~ S3 Control:      6.5/10
+- S3* Audit:       3.5/10
++ S4 Intelligence: 8.5/10
+- S5 Identity:     4.0/10
+
+Viability Axioms
+--------------------------------------------------
++ Axiom 1: Operations/management balanced
++ Axiom 2: Present/future balanced
+- Axiom 3: Weak identity - variety leaking
+
+Algedonic Channels
+--------------------------------------------------
+~ 48 error sources traced
+  35% reach alerting services
+  12 reach logs only
+  3 swallowed silently
+
+POSIWID
+--------------------------------------------------
+8 complex functions without tests
+  src/api/handler.ts: processRequest()
+  src/core/engine.ts: runPipeline()
+
+Findings
+--------------------------------------------------
+HIGH (2)
+  [S3*] Silent error zones in src/utils/
+  [S5] Domain types defined but not consumed
+MEDIUM (3)
+  ...
 ```
 
 ## Supported Languages
