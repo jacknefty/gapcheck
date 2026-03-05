@@ -7,7 +7,7 @@
  * - Channel capacity, not just symptom detection
  */
 
-import type { CodebaseIndex } from './scanner'
+import type { CodebaseIndex, Finding, VSMScores, Severity } from './types'
 import { analyzeVariety, type VarietyAnalysis, type VarietyImbalance } from './vsm/variety'
 import { analyzeRecursion, type RecursionAnalysis } from './vsm/recursion'
 import { analyzeS1, type S1Analysis } from './vsm/s1-operations'
@@ -17,26 +17,8 @@ import { analyzeS3Star, type S3StarAnalysis } from './vsm/s3-star-audit'
 import { analyzeS4, type S4Analysis } from './vsm/s4-intelligence'
 import { analyzeS5, type S5Analysis } from './vsm/s5-identity'
 
-export type Severity = 'HIGH' | 'MEDIUM' | 'LOW'
-
-export interface Finding {
-  system: 'S1' | 'S2' | 'S3' | 'S3*' | 'S4' | 'S5' | 'Variety' | 'Recursion'
-  type: string
-  severity: Severity
-  message: string
-  files: string[]
-}
-
-export interface VSMScores {
-  s1Operations: number
-  s2Coordination: number
-  s3Control: number
-  s3StarAudit: number
-  s4Intelligence: number
-  s5Identity: number
-  varietyBalance: number
-  overall: number
-}
+// Re-export domain types
+export type { Severity, Finding, VSMScores } from './types'
 
 export interface Analysis {
   findings: Finding[]

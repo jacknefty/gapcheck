@@ -17,7 +17,7 @@
  * Key question: Can you see what's actually happening at runtime?
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 
 export interface S3StarFinding {
   type: string

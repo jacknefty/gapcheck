@@ -10,7 +10,7 @@
  * - Where variety is being crushed or overwhelming channels
  */
 
-import type { CodebaseIndex, CodeFile } from '../scanner'
+import type { CodebaseIndex, CodeFile } from '../types'
 
 export interface VarietyProfile {
   path: string

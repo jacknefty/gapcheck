@@ -2,8 +2,8 @@
  * Report - Generate viability reports
  */
 
-import type { CodebaseIndex } from './scanner'
-import type { Analysis, Finding, VSMScores } from './analyzer'
+import type { CodebaseIndex, Finding, VSMScores } from './types'
+import type { Analysis } from './analyzer'
 
 export interface ReportOptions {
   format: 'markdown' | 'json'

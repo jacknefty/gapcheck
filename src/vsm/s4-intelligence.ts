@@ -18,7 +18,7 @@
  * Key question: Does this codebase know what's coming?
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 
 export interface S4Finding {
   type: string

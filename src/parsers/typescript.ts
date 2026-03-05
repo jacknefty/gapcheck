@@ -28,7 +28,8 @@ function extractImports(content: string, filePath: string): ImportInfo[] {
   const dir = filePath.split('/').slice(0, -1).join('/')
 
   // ES6 imports: import X from './path' or import { X } from './path'
-  const es6Pattern = /import\s+(?:(\w+)(?:\s*,\s*)?)?(?:\{([^}]+)\})?\s*(?:from\s+)?['"]([^'"]+)['"]/g
+  // Also handles: import type { X } from './path'
+  const es6Pattern = /import\s+(?:type\s+)?(?:(\w+)(?:\s*,\s*)?)?(?:\{([^}]+)\})?\s*(?:from\s+)?['"]([^'"]+)['"]/g
   let match
   while ((match = es6Pattern.exec(content)) !== null) {
     const [, defaultImport, namedImports, source] = match

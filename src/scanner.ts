@@ -6,27 +6,11 @@
  * the same data structure regardless of source language.
  */
 
-import { getSupportedExtensions, parseFile, getLanguageStats, type ParsedFile, type Language } from './parsers'
+import { getSupportedExtensions, parseFile, getLanguageStats, type Language } from './parsers'
+import type { CodeFile, CodebaseIndex } from './types'
 
-export interface CodeFile {
-  path: string
-  language: Language
-  imports: string[]       // Resolved local import paths
-  importedBy: string[]    // Files that import this one
-  exports: string[]       // Exported symbol names
-  loc: number
-  content: string
-  /** Full parsed data for deeper analysis */
-  parsed: ParsedFile
-}
-
-export interface CodebaseIndex {
-  root: string
-  files: Map<string, CodeFile>
-  totalLoc: number
-  /** Language breakdown */
-  languages: Map<Language, { files: number; loc: number }>
-}
+// Re-export domain types for convenience
+export type { CodeFile, CodebaseIndex } from './types'
 
 /**
  * Discover all source files in a directory

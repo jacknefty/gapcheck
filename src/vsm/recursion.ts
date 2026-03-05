@@ -13,7 +13,7 @@
  * A module must also be a producer (not just a utility) to be hived off.
  */
 
-import type { CodebaseIndex, CodeFile } from '../scanner'
+import type { CodebaseIndex, CodeFile } from '../types'
 import type { VarietyProfile } from './variety'
 
 export interface RecursionLevel {

@@ -11,7 +11,7 @@
  * Key question: Is this a producer? (Only producers can be hived off)
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 import type { VarietyProfile } from './variety'
 import type { RecursionLevel } from './recursion'
 

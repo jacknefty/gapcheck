@@ -15,7 +15,7 @@
  * Key question: Is there a synoptic view? Can resources be reallocated?
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 import type { VarietyProfile } from './variety'
 
 export interface S3Finding {

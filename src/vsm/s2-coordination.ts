@@ -16,7 +16,7 @@
  * Key question: What prevents modules from stepping on each other?
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 import type { VarietyProfile } from './variety'
 
 export interface S2Finding {

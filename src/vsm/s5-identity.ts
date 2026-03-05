@@ -17,7 +17,7 @@
  * Key question: Is the identity clear? Can you tell what this system IS?
  */
 
-import type { CodebaseIndex } from '../scanner'
+import type { CodebaseIndex } from '../types'
 import type { VarietyProfile } from './variety'
 
 export interface S5Finding {
